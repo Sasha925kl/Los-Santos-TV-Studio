@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block page_heading %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="editor-layout">
+    <div class="panel-card narrow-card">
+        <p class="eyebrow">Редактор выпуска</p>
+        <h2>{{ page_title }}</h2>
+        <p class="muted-text">Автор будет указан автоматически по нику: <strong>{{ auto_editor_name }}</strong></p>
+        <form method="post" enctype="multipart/form-data" class="form-grid single-column top-spacing">
+            {% csrf_token %}
+
+            <div class="field-group">
+                <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                {{ form.title }}
+                {% if form.title.errors %}<small class="error-text">{{ form.title.errors|striptags }}</small>{% endif %}
+            </div>
+
+            <div class="field-group">
+                <label for="{{ form.cover_image.id_for_label }}">{{ form.cover_image.label }}</label>
+                {{ form.cover_image }}
+                {% if form.instance.cover_image %}
+                    <img src="{{ form.instance.cover_image.url }}" alt="Фото газеты" class="form-image-preview">
+                {% endif %}
+                {% if form.cover_image.errors %}<small class="error-text">{{ form.cover_image.errors|striptags }}</small>{% endif %}
+            </div>
+
+            <div class="field-group">
+                <label for="{{ form.publication_date.id_for_label }}">{{ form.publication_date.label }}</label>
+                {{ form.publication_date }}
+                {% if form.publication_date.errors %}<small class="error-text">{{ form.publication_date.errors|striptags }}</small>{% endif %}
+            </div>
+
+            <div class="button-row">
+                <button type="submit" class="primary-button">{{ submit_label }}</button>
+                <a href="{% url 'newspaper_list' %}" class="ghost-button">Назад к списку</a>
+                {% if form.instance.pk %}
+                    <a href="{% url 'newspaper_workspace' form.instance.pk %}" class="ghost-button">Текст статьи</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    <aside class="panel-card">
+        <p class="eyebrow">Как работает</p>
+        <div class="stack-list compact-list">
+            <div class="info-card">В этой форме можно менять название, фото и дату выпуска.</div>
+            <div class="info-card">Автор газеты ставится автоматически по нику текущего пользователя.</div>
+            <div class="info-card">Для заголовка и текста статьи используй кнопку `Текст статьи`.</div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

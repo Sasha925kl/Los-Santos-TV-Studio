@@ -1,0 +1,73 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Выдача ролей{% endblock %}
+{% block page_heading %}Выдача ролей{% endblock %}
+
+{% block content %}
+<section class="editor-layout role-layout">
+    <div class="panel-card">
+        <p class="eyebrow">Управление доступом</p>
+        <h2>Обычная страница выдачи ролей</h2>
+        <p class="muted-text">Здесь можно выбрать пользователя и назначить ему роль без перехода в стандартную админку.</p>
+
+        <form method="post" class="form-grid single-column compact-form role-form">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="field-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<small class="error-text">{{ field.errors|striptags }}</small>{% endif %}
+                </div>
+            {% endfor %}
+            <div class="button-row">
+                <button type="submit" class="primary-button">Сохранить роль</button>
+            </div>
+        </form>
+    </div>
+
+    <aside class="panel-card">
+        <p class="eyebrow">Подсказка</p>
+        <div class="stack-list compact-list">
+            <div class="info-card">Следящий: полный доступ к ролям, газетам и странице выдачи ролей.</div>
+            <div class="info-card">Редактор газет: создание и редактирование выпусков.</div>
+            <div class="info-card">Гость: только просмотр базовых страниц.</div>
+        </div>
+    </aside>
+</section>
+
+<section class="content-grid admin-grid">
+    <div class="panel-card">
+        <p class="eyebrow">Пользователи</p>
+        <h2>Текущие роли</h2>
+        <div class="stack-list compact-list">
+            {% for profile in users %}
+                <div class="list-card user-row">
+                    <div>
+                        <h4>{{ profile.user.username }}</h4>
+                        <p>{{ profile.user.email|default:'Email не указан' }}</p>
+                    </div>
+                    <span class="chip">{{ profile.get_role_display }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel-card">
+        <p class="eyebrow">Сводка</p>
+        <div class="stats-grid role-grid">
+            {% for item in role_totals %}
+                <div class="stat-box">
+                    <span>{{ item.total }}</span>
+                    <small>{{ item.label }}</small>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="stack-list top-spacing">
+            {% for request in requests %}
+                <div class="info-card">{{ request }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

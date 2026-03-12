@@ -1,0 +1,17 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Вход{% endblock %}
+{% block page_heading %}Вход в систему{% endblock %}
+
+{% block content %}
+<section class="auth-card narrow-card">
+    <h2>Стандартный вход</h2>
+    <p>Используйте логин и пароль, затем система откроет обзорную панель.</p>
+    <form method="post" class="form-grid single-column">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="primary-button">Войти</button>
+    </form>
+    <p class="muted-text">Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+</section>
+{% endblock %}

@@ -1,0 +1,140 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Главная SMI{% endblock %}
+
+{% block content %}
+<section class="studio-layout studio-layout--refined">
+    <div class="studio-grid"></div>
+    <div class="studio-glow"></div>
+
+    <section class="hero-stage">
+        <div class="hero-stage__frame">
+            <div class="content-corners content-corners--tl"></div>
+            <div class="content-corners content-corners--tr"></div>
+            <div class="content-corners content-corners--bl"></div>
+            <div class="content-corners content-corners--br"></div>
+
+            <div class="hero-stage__content">
+                <span class="section-pill">Главный эфир</span>
+                <p class="hero-stage__kicker">Новости SMI / Лента выпусков / Центральная студия</p>
+                <h1>{{ featured_newspaper.title|default:'Здесь будут новости' }}{% if featured_newspaper %} {{ featured_newspaper.issue_number }}{% endif %}</h1>
+                <p class="hero-stage__text">
+                    {% if featured_newspaper %}
+                        {{ featured_newspaper.description|default:'Главный выпуск редакции с ключевыми материалами дня, оперативными заметками и свежей лентой газет.' }}
+                    {% else %}
+                        Эта область зарезервирована для срочных новостей, статей и избранных материалов. Контент будет динамически загружаться и отображаться в этом центральном разделе.
+                    {% endif %}
+                </p>
+                <div class="hero-stage__meta">
+                    <span>{{ role_label }}</span>
+                    {% if featured_newspaper %}<span>{{ featured_newspaper.get_status_display }}</span>{% endif %}
+                    {% if featured_newspaper %}<span>{{ featured_newspaper.editor_name }}</span>{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <section class="studio-ticker studio-ticker--hero">
+            <span class="ticker-label">СРОЧНО</span>
+            <div class="ticker-track">
+                <div class="ticker-move">
+                    {% for item in smi_news %}
+                        <span>{{ item.title }}</span>
+                    {% endfor %}
+                    {% for item in smi_news %}
+                        <span>{{ item.title }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <aside class="studio-tv-panel studio-tv-panel--refined">
+        <div class="studio-tv-panel__header">
+            <span>Live Feed</span>
+            <span class="live-badge"></span>
+        </div>
+        <div class="studio-tv-screen">
+            <div class="studio-tv-scan"></div>
+            <div class="studio-tv-overlay"></div>
+        </div>
+        <div class="studio-tv-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </aside>
+</section>
+
+<section class="dashboard-refined">
+    <article class="feature-panel feature-panel--lead">
+        <div class="panel-topline">
+            <span class="story-tag">Главная тема</span>
+            <a href="{% url 'newspaper_list' %}" class="tiny-link">Открыть все газеты</a>
+        </div>
+        <h3>Центральный выпуск редакции</h3>
+        <p class="feature-panel__copy">
+            {% if featured_newspaper %}
+                {{ featured_newspaper.title }} {{ featured_newspaper.issue_number }} ведет сегодняшний эфир и служит якорным материалом для домашней страницы.
+            {% else %}
+                Когда появится первый выпуск, он автоматически станет главным материалом на этой панели.
+            {% endif %}
+        </p>
+        <div class="feature-actions">
+            {% if featured_newspaper %}
+                <a href="{% url 'newspaper_read' featured_newspaper.pk %}" class="primary-button">Читать выпуск</a>
+            {% endif %}
+            <a href="{% url 'newspaper_list' %}" class="ghost-button">Лента газет</a>
+            {% if can_admin %}<a href="{% url 'admin_panel' %}" class="ghost-button">Выдача ролей</a>{% endif %}
+        </div>
+    </article>
+
+    <article class="feature-panel feature-panel--news">
+        <div class="panel-topline">
+            <span class="story-tag">Новости студии</span>
+        </div>
+        <div class="news-rail">
+            {% for item in smi_news %}
+                <article class="news-rail__item">
+                    <small>{{ item.category }}</small>
+                    <h4>{{ item.title }}</h4>
+                    <p>{{ item.text }}</p>
+                </article>
+            {% endfor %}
+        </div>
+    </article>
+</section>
+
+<section class="reading-deck">
+    <div class="reading-deck__head">
+        <div>
+            <p class="eyebrow">Лента газет</p>
+            <h3>Что можно почитать прямо сейчас</h3>
+        </div>
+        <div class="chip-row">
+            <span class="chip">Газет: {{ newspapers|length }}</span>
+            {% if can_manage %}<span class="chip">Доступно редактирование</span>{% endif %}
+        </div>
+    </div>
+
+    <div class="reading-deck__grid">
+        {% for newspaper in newspapers %}
+            <article class="reading-card {% if forloop.first %}reading-card--featured{% endif %}">
+                <span class="story-tag">{{ newspaper.get_status_display }}</span>
+                <h4>{{ newspaper.title }} {{ newspaper.issue_number }}</h4>
+                <p>{{ newspaper.description|default:'Краткое описание номера пока не заполнено.'|truncatechars:150 }}</p>
+                <div class="meta-row">
+                    <span>{{ newspaper.editor_name }}</span>
+                    <span>{{ newspaper.publication_date|default:'Дата не указана' }}</span>
+                </div>
+                <a href="{% url 'newspaper_read' newspaper.pk %}" class="text-link">Читать выпуск</a>
+            </article>
+        {% empty %}
+            <article class="reading-card reading-card--featured">
+                <span class="story-tag">Пусто</span>
+                <h4>Лента пока пустая</h4>
+                <p>Создай первый выпуск, чтобы главная страница стала живой и наполнилась новостями редакции.</p>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

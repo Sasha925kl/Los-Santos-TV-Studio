@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Газета{% endblock %}
+
+{% block content %}
+<section class="read-shell">
+    <div class="read-topbar">
+        <div>
+            <p class="eyebrow">Просмотр газеты</p>
+        </div>
+        <div class="button-row">
+            <a href="{% url 'newspaper_list' %}" class="ghost-button">Назад к ленте</a>
+            {% if can_manage %}
+                <a href="{% url 'newspaper_edit' newspaper.pk %}" class="ghost-button">Редактировать</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <article class="newspaper-paper newspaper-paper--minimal">
+        <header class="newspaper-paper__minihead">
+            <p class="newspaper-paper__edition">Новости штата</p>
+            <h1 class="newspaper-paper__minimal-title">{{ newspaper.title }}</h1>
+        </header>
+
+        {% if newspaper.cover_image %}
+            <figure class="newspaper-paper__figure newspaper-paper__figure--full newspaper-paper__figure--solo">
+                <img src="{{ newspaper.cover_image.url }}" alt="Фото газеты" class="newspaper-paper__image newspaper-paper__image--full">
+            </figure>
+        {% else %}
+            <div class="newspaper-paper__empty-photo">Фото для этой газеты еще не загружено.</div>
+        {% endif %}
+
+        <div class="newspaper-paper__photo-meta newspaper-paper__photo-meta--minimal">
+            <span><strong>Дата:</strong> {{ newspaper.publication_date|date:'j E Y г.'|default:'Не указана' }}</span>
+            <span><strong>Опубликовал:</strong> {{ newspaper.editor_name }}</span>
+        </div>
+    </article>
+</section>
+{% endblock %}

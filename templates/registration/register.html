@@ -1,0 +1,17 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+{% block page_heading %}Регистрация{% endblock %}
+
+{% block content %}
+<section class="auth-card narrow-card">
+    <h2>Дефолтная регистрация</h2>
+    <p>После регистрации пользователь получает роль <strong>Гость</strong>. Следящий может позже повысить права в админ-панели.</p>
+    <form method="post" class="form-grid single-column">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="primary-button">Создать аккаунт</button>
+    </form>
+    <p class="muted-text">Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+</section>
+{% endblock %}

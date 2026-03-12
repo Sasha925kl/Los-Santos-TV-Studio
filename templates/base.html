@@ -1,0 +1,72 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SMI Control Center{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+    <div class="broadcast-shell">
+        <aside class="left-rail">
+            <div class="rail-stack top-icons">
+                <span class="rail-dot brand-mini"></span>
+                <span class="rail-dot"></span>
+                <span class="rail-dot"></span>
+            </div>
+            {% if user.is_authenticated %}
+                <nav class="broadcast-nav">
+                    <a href="{% url 'dashboard' %}" class="broadcast-nav__item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">[]</a>
+                    <a href="{% url 'newspaper_list' %}" class="broadcast-nav__item {% if request.resolver_match.url_name == 'newspaper_list' %}active{% endif %}">@</a>
+                    <a href="{% url 'newspaper_create' %}" class="broadcast-nav__item {% if request.resolver_match.url_name == 'newspaper_create' %}active{% endif %}">+</a>
+                    <a href="{% url 'admin_panel' %}" class="broadcast-nav__item {% if request.resolver_match.url_name == 'admin_panel' %}active{% endif %}">R</a>
+                    <a href="{% url 'support' %}" class="broadcast-nav__item {% if request.resolver_match.url_name == 'support' %}active{% endif %}">?</a>
+                    {% if user.profile.role == 'watcher' %}
+                        <a href="{% url 'support' %}" class="broadcast-nav__item {% if request.resolver_match.url_name == 'support' %}active{% endif %}">T</a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+            <div class="rail-stack bottom-icons">
+                <span class="rail-mini"></span>
+                <span class="rail-mini"></span>
+                <span class="rail-mini"></span>
+                <span class="rail-mini"></span>
+            </div>
+        </aside>
+
+        <div class="broadcast-main">
+            <header class="broadcast-topbar">
+                <div class="channel-brand">
+                    <div class="channel-brand__icon"></div>
+                    <div>
+                        <p class="channel-brand__title">ТВ СТУДИЯ ЛОС САНТОС</p>
+                        <p class="channel-brand__subtitle">Ваш надежный источник новостей</p>
+                    </div>
+                </div>
+                <div class="broadcast-topbar__actions">
+                    {% if user.is_authenticated %}
+                        <div class="live-time">{{ user.profile.get_role_display }}</div>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="search-box">Выйти</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="search-box">Войти</a>
+                    {% endif %}
+                </div>
+            </header>
+
+            {% if messages %}
+                <div class="messages broadcast-messages">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</body>
+</html>

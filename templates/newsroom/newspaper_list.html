@@ -1,0 +1,46 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Газеты{% endblock %}
+{% block page_heading %}Каталог газет{% endblock %}
+
+{% block content %}
+<section class="panel-card">
+    <div class="section-head">
+        <div>
+            <p class="eyebrow">Каталог</p>
+            <h2>Все выпуски</h2>
+        </div>
+        {% if can_manage %}
+            <a href="{% url 'newspaper_create' %}" class="primary-button">Новый выпуск</a>
+        {% endif %}
+    </div>
+
+    {% if newspapers %}
+        <div class="stack-list">
+            {% for newspaper in newspapers %}
+                <article class="list-card stretch-card newspaper-list-card">
+                    <div class="newspaper-list-card__main">
+                        {% if newspaper.cover_image %}
+                            <img src="{{ newspaper.cover_image.url }}" alt="Фото газеты" class="newspaper-thumb">
+                        {% endif %}
+                        <div>
+                            <h3>{{ newspaper.title }} {{ newspaper.issue_number }}</h3>
+                            <p>{{ newspaper.editor_name }} • {{ newspaper.get_status_display }}</p>
+                            <p class="muted-text">{{ newspaper.description|default:'Без дополнительного описания.'|truncatechars:160 }}</p>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <span class="chip">{{ newspaper.publication_date|default:'Дата не указана' }}</span>
+                        <a href="{% url 'newspaper_read' newspaper.pk %}" class="primary-button">Читать</a>
+                        {% if can_manage %}
+                            <a href="{% url 'newspaper_edit' newspaper.pk %}" class="ghost-button">Редактировать</a>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-state">Газеты еще не созданы.</p>
+    {% endif %}
+</section>
+{% endblock %}

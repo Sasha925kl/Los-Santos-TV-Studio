@@ -1,0 +1,99 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Техподдержка{% endblock %}
+
+{% block content %}
+<section class="support-shell">
+    <div class="support-grid">
+        <section class="panel-card support-card">
+            <p class="eyebrow">Техподдержка</p>
+            <h2>Создать обращение</h2>
+            <p class="muted-text">Опиши проблему, вопрос или запрос по системе. Можно приложить фото или скриншот. Большие изображения система уменьшит автоматически.</p>
+            <form method="post" enctype="multipart/form-data" class="form-grid single-column support-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_ticket">
+                {% for field in ticket_form %}
+                    <div class="field-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<small class="error-text">{{ field.errors|striptags }}</small>{% endif %}
+                    </div>
+                {% endfor %}
+                <div class="button-row">
+                    <button type="submit" class="primary-button">Отправить в техподдержку</button>
+                </div>
+            </form>
+        </section>
+
+        <aside class="panel-card support-sidecard">
+            <p class="eyebrow">Меню поддержки</p>
+            <div class="stack-list compact-list">
+                <div class="info-card">Гость и редактор могут создавать обращения, прикладывать фото и читать ответы.</div>
+                {% if can_answer %}
+                    <div class="info-card support-admin-note">Ответы тех-админа доступны только роли Следящий.</div>
+                {% else %}
+                    <div class="info-card">Меню ответа скрыто, потому что у вас нет роли Следящий.</div>
+                {% endif %}
+            </div>
+        </aside>
+    </div>
+
+    <section class="panel-card support-card">
+        <div class="section-head">
+            <div>
+                <p class="eyebrow">Обращения</p>
+                <h2>{% if can_answer %}Все тикеты техподдержки{% else %}Мои обращения{% endif %}</h2>
+            </div>
+        </div>
+
+        <div class="support-ticket-list">
+            {% for ticket in tickets %}
+                <article class="support-ticket">
+                    <div class="support-ticket__header">
+                        <div>
+                            <h3>{{ ticket.subject }}</h3>
+                            <p class="muted-text">{{ ticket.author.username }} • {{ ticket.get_status_display }} • {{ ticket.created_at|date:'d.m.Y H:i' }}</p>
+                        </div>
+                        <span class="chip">{{ ticket.get_status_display }}</span>
+                    </div>
+
+                    <div class="support-ticket__body">
+                        <p>{{ ticket.message|linebreaks }}</p>
+                    </div>
+
+                    {% if ticket.attachment %}
+                        <div class="support-attachment-box">
+                            <img src="{{ ticket.attachment.url }}" alt="Вложение к обращению" class="support-attachment-image">
+                        </div>
+                    {% endif %}
+
+                    {% if ticket.admin_reply %}
+                        <div class="support-reply-box">
+                            <p class="eyebrow">Ответ тех-админа</p>
+                            <p>{{ ticket.admin_reply|linebreaks }}</p>
+                            <p class="muted-text">Ответил: {{ ticket.replied_by.username|default:'Тех-админ' }}</p>
+                        </div>
+                    {% endif %}
+
+                    {% if can_answer %}
+                        <form method="post" class="support-reply-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="reply_ticket">
+                            <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                            <div class="field-group">
+                                <label for="reply-{{ ticket.id }}">Ответ тех-админа</label>
+                                <textarea id="reply-{{ ticket.id }}" name="admin_reply" rows="4">{{ ticket.admin_reply }}</textarea>
+                            </div>
+                            <div class="button-row">
+                                <button type="submit" class="primary-button">Ответить</button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </article>
+            {% empty %}
+                <p class="empty-state">Пока нет обращений в техподдержку.</p>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% endblock %}

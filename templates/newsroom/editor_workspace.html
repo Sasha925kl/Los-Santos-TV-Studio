@@ -1,0 +1,88 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Редактор документа{% endblock %}
+
+{% block content %}
+<section class="workspace-shell">
+    <div class="workspace-toolbar">
+        <div class="workspace-toolbar__row">
+            {% for item in toolbar_items %}
+                <span class="workspace-menu-item">{{ item }}</span>
+            {% endfor %}
+        </div>
+        <div class="workspace-toolbar__row workspace-toolbar__row--controls">
+            {% for item in format_items %}
+                <span class="workspace-chip">{{ item }}</span>
+            {% endfor %}
+            <span class="workspace-chip">Жирный</span>
+            <span class="workspace-chip">Курсив</span>
+            <span class="workspace-chip">Список</span>
+        </div>
+    </div>
+
+    <div class="workspace-layout">
+        <section class="workspace-page-wrap">
+            <form method="post" enctype="multipart/form-data" class="workspace-form">
+                {% csrf_token %}
+                <article class="workspace-page">
+                    <div class="workspace-meta">
+                        <span>{{ object.title }}</span>
+                        <span>{{ object.issue_number }}</span>
+                        <span>{{ object.editor_name }}</span>
+                    </div>
+
+                    <div class="workspace-cover-block">
+                        {% if form.instance.cover_image %}
+                            <img src="{{ form.instance.cover_image.url }}" alt="Фото газеты" class="workspace-cover-image">
+                        {% else %}
+                            <div class="workspace-cover-placeholder">Здесь будет фото для газеты</div>
+                        {% endif %}
+                        <div class="workspace-upload-field">
+                            <label for="{{ form.cover_image.id_for_label }}">Фото для газеты</label>
+                            {{ form.cover_image }}
+                            {% if form.cover_image.errors %}<small class="error-text">{{ form.cover_image.errors|striptags }}</small>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="workspace-field">
+                        <label for="{{ form.article_title.id_for_label }}">{{ form.article_title.label }}</label>
+                        {{ form.article_title }}
+                    </div>
+
+                    <div class="workspace-field workspace-field--document">
+                        <label for="{{ form.article_body.id_for_label }}">{{ form.article_body.label }}</label>
+                        {{ form.article_body }}
+                    </div>
+
+                    <div class="workspace-field workspace-field--notes">
+                        <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                        {{ form.description }}
+                    </div>
+                </article>
+
+                <div class="workspace-actions">
+                    <button type="submit" class="primary-button">Сохранить документ</button>
+                    <a href="{% url 'newspaper_edit' object.pk %}" class="ghost-button">Обычная форма</a>
+                    <a href="{% url 'newspaper_list' %}" class="ghost-button">К списку</a>
+                </div>
+            </form>
+        </section>
+
+        <aside class="workspace-sidebar">
+            <div class="workspace-sidecard">
+                <p class="eyebrow">Страница документа</p>
+                <h3>Режим как Word</h3>
+                <p>Здесь удобно писать статью, вставлять фото для газеты и вести редакционные заметки в одном окне.</p>
+            </div>
+            <div class="workspace-sidecard">
+                <p class="eyebrow">Подсказки</p>
+                <div class="stack-list compact-list">
+                    <div class="info-card">Сначала загрузи фото, чтобы видеть обложку выпуска.</div>
+                    <div class="info-card">Заполни заголовок и основной текст как документ.</div>
+                    <div class="info-card">Описание можно использовать как заметки редактора.</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}
