@@ -98,8 +98,6 @@ class NewspaperDefaultsMixin:
         newspaper.editor_name = self.request.user.username
         if not newspaper.title:
             newspaper.title = f'Газета от {publication_date.strftime("%d.%m.%Y")}'
-        if not newspaper.issue_number:
-            newspaper.issue_number = publication_date.strftime('%d%m%Y')
         if not newspaper.article_title:
             newspaper.article_title = newspaper.title
         return newspaper

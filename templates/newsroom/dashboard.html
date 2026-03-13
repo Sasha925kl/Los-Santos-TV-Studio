@@ -1,4 +1,4 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Главная SMI{% endblock %}
 
@@ -17,7 +17,7 @@
             <div class="hero-stage__content">
                 <span class="section-pill">Главный эфир</span>
                 <p class="hero-stage__kicker">Новости SMI / Лента выпусков / Центральная студия</p>
-                <h1>{{ featured_newspaper.title|default:'Здесь будут новости' }}{% if featured_newspaper %} {{ featured_newspaper.issue_number }}{% endif %}</h1>
+                <h1>{{ featured_newspaper.title|default:'Здесь будут новости' }}</h1>
                 <p class="hero-stage__text">
                     {% if featured_newspaper %}
                         {{ featured_newspaper.description|default:'Главный выпуск редакции с ключевыми материалами дня, оперативными заметками и свежей лентой газет.' }}
@@ -74,7 +74,7 @@
         <h3>Центральный выпуск редакции</h3>
         <p class="feature-panel__copy">
             {% if featured_newspaper %}
-                {{ featured_newspaper.title }} {{ featured_newspaper.issue_number }} ведет сегодняшний эфир и служит якорным материалом для домашней страницы.
+                {{ featured_newspaper.title }} ведет сегодняшний эфир и служит якорным материалом для домашней страницы.
             {% else %}
                 Когда появится первый выпуск, он автоматически станет главным материалом на этой панели.
             {% endif %}
@@ -120,7 +120,7 @@
         {% for newspaper in newspapers %}
             <article class="reading-card {% if forloop.first %}reading-card--featured{% endif %}">
                 <span class="story-tag">{{ newspaper.get_status_display }}</span>
-                <h4>{{ newspaper.title }} {{ newspaper.issue_number }}</h4>
+                <h4>{{ newspaper.title }}</h4>
                 <p>{{ newspaper.description|default:'Краткое описание номера пока не заполнено.'|truncatechars:150 }}</p>
                 <div class="meta-row">
                     <span>{{ newspaper.editor_name }}</span>
@@ -138,3 +138,4 @@
     </div>
 </section>
 {% endblock %}
+

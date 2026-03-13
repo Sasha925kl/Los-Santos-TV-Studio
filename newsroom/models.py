@@ -1,4 +1,4 @@
-﻿from io import BytesIO
+from io import BytesIO
 from pathlib import Path
 
 from django.conf import settings
@@ -22,19 +22,16 @@ class Profile(models.Model):
 
 class Newspaper(models.Model):
     class Status(models.TextChoices):
-        DRAFT = 'draft', 'Черновик'
-        REVIEW = 'review', 'На проверке'
         PUBLISHED = 'published', 'Опубликована'
 
     title = models.CharField(max_length=160)
-    issue_number = models.CharField(max_length=30)
     editor_name = models.CharField(max_length=120)
     article_title = models.CharField(max_length=180, blank=True)
     article_body = models.TextField(blank=True)
     description = models.TextField(blank=True)
     cover_image = models.ImageField(upload_to='newspapers/', blank=True, null=True)
     publication_date = models.DateField(null=True, blank=True)
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PUBLISHED)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='newspapers')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -43,7 +40,7 @@ class Newspaper(models.Model):
         ordering = ['-updated_at', '-created_at']
 
     def __str__(self):
-        return f'{self.title} {self.issue_number}'
+        return self.title
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -122,3 +119,5 @@ class SupportTicket(models.Model):
         resized_name = f'{folder}/{stem}.jpg'
         image_field.save(resized_name, ContentFile(image_io.getvalue()), save=False)
         super().save(update_fields=[field_name])
+
+
